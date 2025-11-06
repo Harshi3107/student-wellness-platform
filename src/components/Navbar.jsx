@@ -1,58 +1,104 @@
-import { AppBar, Toolbar, Typography, Box, Button, Stack } from "@mui/material";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import React from "react";
+import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
+import { Link, useLocation } from "react-router-dom";
 
-function getRole() {
-  try {
-    const raw = localStorage.getItem("auth");
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    return parsed?.role || null;
-  } catch {
-    return null;
-  }
-}
-
-export default function Navbar() {
+const Navbar = () => {
   const location = useLocation();
-  const navigate = useNavigate();
-  const role = getRole();
+  const userRole = localStorage.getItem("userRole");
 
   const handleLogout = () => {
-    localStorage.removeItem("auth");
-    navigate("/");
+    localStorage.removeItem("userRole");
   };
 
+  const navLinks = [
+    { label: "About", path: "/about" },
+    { label: "Connect", path: "/connect" },
+    { label: "Events & Workshops", path: "/events" },
+  ];
+
   return (
-    <AppBar position="static" color="primary" elevation={2}>
-      <Toolbar sx={{ gap: 2 }}>
-        <Typography variant="h6" sx={{ fontWeight: 600, flexGrow: 1 }}>
+    <AppBar
+      position="static"
+      sx={{
+        backgroundColor: "#0f766e",
+        boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+        borderBottomLeftRadius: "0.5rem",
+        borderBottomRightRadius: "0.5rem",
+      }}
+    >
+      <Toolbar>
+        <Typography
+          variant="h6"
+          component={Link}
+          to="/"
+          sx={{
+            flexGrow: 1,
+            color: "#fff",
+            textDecoration: "none",
+            fontWeight: "bold",
+          }}
+        >
           Student Wellness 🌿
         </Typography>
 
-        <Stack direction="row" spacing={1} alignItems="center">
-          <Button color="inherit" component={Link} to="/" disabled={location.pathname === "/"}>Login</Button>
-          <Button color="inherit" component={Link} to="/about">About</Button>
-          <Button color="inherit" component={Link} to="/connect">Connect</Button>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          {navLinks.map((link) => (
+            <Button
+              key={link.path}
+              component={Link}
+              to={link.path}
+              sx={{
+                color: "#fff",
+                fontWeight:
+                  location.pathname === link.path ? "bold" : "normal",
+                "&:hover": { backgroundColor: "rgba(255,255,255,0.1)" },
+              }}
+            >
+              {link.label}
+            </Button>
+          ))}
 
-          {role === "student" && (
-            <Button color="inherit" component={Link} to="/student">Student</Button>
+          {/* Conditional links */}
+          {userRole === "student" && (
+            <Button
+              component={Link}
+              to="/student-dashboard"
+              sx={{ color: "#fff" }}
+            >
+              Dashboard
+            </Button>
           )}
-          {role === "admin" && (
-            <Button color="inherit" component={Link} to="/admin">Admin</Button>
+          {userRole === "admin" && (
+            <Button
+              component={Link}
+              to="/admin-dashboard"
+              sx={{ color: "#fff" }}
+            >
+              Admin Panel
+            </Button>
           )}
 
-          {role ? (
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Typography variant="body2" sx={{ opacity: 0.85 }}>
-                {role.toUpperCase()}
-              </Typography>
-              <Button variant="outlined" color="inherit" onClick={handleLogout}>
-                Logout
-              </Button>
-            </Box>
-          ) : null}
-        </Stack>
+          <Button
+            component={Link}
+            to="/"
+            onClick={handleLogout}
+            sx={{
+              ml: 1,
+              color: "#fff",
+              border: "2px solid #fff",
+              borderRadius: "10px",
+              px: 2,
+              fontWeight: "bold",
+              textTransform: "uppercase",
+              "&:hover": { backgroundColor: "rgba(255,255,255,0.15)" },
+            }}
+          >
+            Logout
+          </Button>
+        </Box>
       </Toolbar>
     </AppBar>
   );
-}
+};
+
+export default Navbar;

@@ -1,66 +1,73 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { ThemeProvider, CssBaseline, Container } from "@mui/material";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ThemeProvider } from "@mui/material/styles";
+import { CssBaseline, Box } from "@mui/material";
 import theme from "./theme";
-
-// Components
 import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
+import EventsPage from "./components/EventsPage";
 
 // Pages
-import Login from "./Pages/Login";
 import StudentDashboard from "./Pages/StudentDashboard";
 import AdminDashboard from "./Pages/AdminDashboard";
+import Login from "./Pages/Login";
 import Connect from "./Pages/Connect";
 import About from "./Pages/About";
-import Events from "./Pages/Events";
 import Feedback from "./Pages/Feedback";
 
-export default function App() {
+function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
         <Navbar />
-        <Container
-          maxWidth="lg"
-          sx={{
-            minHeight: "calc(100vh - 120px)",
-            py: 4,
-          }}
-        >
+        <Box sx={{ p: 3, minHeight: "100vh", bgcolor: "background.default" }}>
           <Routes>
-            {/* Public routes */}
+            {/* Public */}
             <Route path="/" element={<Login />} />
             <Route path="/about" element={<About />} />
-            <Route path="/connect" element={<Connect />} />
-            <Route path="/events" element={<Events />} />
             <Route path="/feedback" element={<Feedback />} />
 
-            {/* Protected Routes */}
+            {/* Student Protected Routes */}
             <Route
-              path="/student"
+              path="/student-dashboard"
               element={
-                <ProtectedRoute allowRole="student">
+                <ProtectedRoute allowedRoles={["student"]}>
                   <StudentDashboard />
                 </ProtectedRoute>
               }
             />
             <Route
-              path="/admin"
+              path="/connect"
               element={
-                <ProtectedRoute allowRole="admin">
-                  <AdminDashboard />
+                <ProtectedRoute allowedRoles={["student"]}>
+                  <Connect />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/events"
+              element={
+                <ProtectedRoute allowedRoles={["student"]}>
+                  <EventsPage />
                 </ProtectedRoute>
               }
             />
 
-            {/* Catch-all */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            {/* Admin Protected Routes */}
+            <Route
+              path="/admin-dashboard"
+              element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
-        </Container>
-        <Footer />
+        </Box>
       </Router>
     </ThemeProvider>
   );
 }
+
+export default App;

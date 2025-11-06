@@ -1,31 +1,20 @@
-import { Navigate, useLocation } from "react-router-dom";
+import React from "react";
+import { Navigate } from "react-router-dom";
 
-function getStoredRole() {
-  try {
-    const data = JSON.parse(localStorage.getItem("auth") || "null");
-    return data?.role ?? null;
-  } catch {
-    return null;
-  }
-}
+const ProtectedRoute = ({ children, allowedRoles }) => {
+  const userRole = localStorage.getItem("userRole");
 
-/**
- * Usage:
- * <ProtectedRoute allowRole="student"><StudentDashboard/></ProtectedRoute>
- */
-export default function ProtectedRoute({ allowRole, children }) {
-  const location = useLocation();
-  const role = getStoredRole();
-
-  if (!role) {
-    return <Navigate to="/" replace state={{ from: location }} />;
+  if (!userRole) {
+    // Not logged in
+    return <Navigate to="/" replace />;
   }
 
-  if (allowRole && role !== allowRole) {
-    // Role mismatch: send them to their own dashboard if possible
-    const fallback = role === "admin" ? "/admin" : "/student";
-    return <Navigate to={fallback} replace />;
+  if (!allowedRoles.includes(userRole)) {
+    // Logged in but wrong role
+    return <Navigate to={`/${userRole}-dashboard`} replace />;
   }
 
   return children;
-}
+};
+
+export default ProtectedRoute;

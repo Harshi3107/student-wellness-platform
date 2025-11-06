@@ -1,58 +1,133 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import {
-  Container, TextField, Button, Typography, Paper,
-  ToggleButton, ToggleButtonGroup, Box, Alert
+  Container,
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Paper,
+  Alert,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
-export default function Login() {
-  const [role, setRole] = useState("student");
-  const [email, setEmail] = useState("");
+const Login = () => {
+  const navigate = useNavigate();
+
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const navigate = useNavigate();
+
+  const studentCredentials = { username: "student123", password: "student@123" };
+  const adminCredentials = { username: "admin123", password: "admin@123" };
 
   const handleLogin = (e) => {
     e.preventDefault();
 
-    // super-simple mock auth rule
-    if (!email || !password) {
-      setError("Please enter both email and password.");
-      return;
+    if (
+      username === studentCredentials.username &&
+      password === studentCredentials.password
+    ) {
+      localStorage.setItem("userRole", "student");
+      navigate("/student-dashboard");
+    } else if (
+      username === adminCredentials.username &&
+      password === adminCredentials.password
+    ) {
+      localStorage.setItem("userRole", "admin");
+      navigate("/admin-dashboard");
+    } else {
+      setError("Invalid username or password. Please try again.");
     }
-
-    // Store minimal auth state
-    localStorage.setItem("auth", JSON.stringify({ role, email }));
-
-    navigate(role === "admin" ? "/admin" : "/student", { replace: true });
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 8 }}>
-      <Paper elevation={6} sx={{ p: 5 }}>
-        <Typography variant="h4" color="primary" gutterBottom align="center">
-          Student Wellness Login
+    <Container
+      maxWidth="sm"
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100vh",
+        bgcolor: "background.default",
+      }}
+    >
+      <Paper
+        elevation={6}
+        sx={{
+          p: 5,
+          borderRadius: 4,
+          width: "100%",
+          maxWidth: 420,
+          textAlign: "center",
+          boxShadow: "0px 6px 12px rgba(0,0,0,0.1)",
+        }}
+      >
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{
+            fontWeight: "bold",
+            mb: 3,
+            background: "linear-gradient(90deg, #0f766e, #14532d)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+          }}
+        >
+          Student Wellness Login 🌿
         </Typography>
 
-        <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
-          <ToggleButtonGroup
-            value={role}
-            exclusive
-            onChange={(e, newRole) => newRole && setRole(newRole)}
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+
+        <Box component="form" onSubmit={handleLogin}>
+          <TextField
+            label="Username"
+            variant="outlined"
+            fullWidth
+            required
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            label="Password"
+            variant="outlined"
+            type="password"
+            fullWidth
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            sx={{ mb: 3 }}
+          />
+          <Button
+            variant="contained"
+            type="submit"
+            fullWidth
+            sx={{
+              py: 1.3,
+              fontWeight: "bold",
+              fontSize: "1rem",
+              backgroundColor: "#0f766e",
+              "&:hover": { backgroundColor: "#14532d" },
+            }}
           >
-            <ToggleButton value="student">Student</ToggleButton>
-            <ToggleButton value="admin">Admin</ToggleButton>
-          </ToggleButtonGroup>
+            Login
+          </Button>
         </Box>
 
-        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-
-        <Box component="form" onSubmit={handleLogin} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <TextField label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          <TextField label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-          <Button type="submit" variant="contained" size="large">Login</Button>
-        </Box>
+        <Typography
+          variant="body2"
+          sx={{ mt: 3, color: "text.secondary", lineHeight: 1.7 }}
+        >
+          <b>Student:</b> student123 / student@123 <br />
+          <b>Admin:</b> admin123 / admin@123
+        </Typography>
       </Paper>
     </Container>
   );
-}
+};
+
+export default Login;
