@@ -6,13 +6,28 @@ export default function Feedback() {
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    const feedbacks = JSON.parse(localStorage.getItem("feedbacks")) || [];
-    feedbacks.push(form);
-    localStorage.setItem("feedbacks", JSON.stringify(feedbacks));
-    setSubmitted(true);
-    setForm({ name: "", event: "", message: "" });
+  e.preventDefault();
+
+  // 💾 Load existing feedback list from localStorage (same key admin uses)
+  const feedbackList = JSON.parse(localStorage.getItem("feedback")) || [];
+
+  // 📝 Create a new feedback entry
+  const newFeedback = {
+    id: Date.now(),
+    name: form.name,
+    event: form.event,
+    message: form.message,
+    date: new Date().toLocaleString(),
   };
+
+  // 🔄 Update localStorage
+  const updatedList = [...feedbackList, newFeedback];
+  localStorage.setItem("feedback", JSON.stringify(updatedList));
+
+  // ✅ Reset form
+  setForm({ name: "", event: "", message: "" });
+  setSubmitted(true);
+};
 
   return (
     <Container maxWidth="sm">
