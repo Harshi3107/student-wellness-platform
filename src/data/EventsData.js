@@ -5,6 +5,7 @@ const eventsData = [
     date: "2025-11-10",
     time: "10:00 AM - 12:00 PM",
     venue: "Wellness Hall A",
+    organizer: "Dr. Neha Sharma",
     description: "Learn techniques for mindfulness and stress management.",
   },
   {
@@ -13,6 +14,7 @@ const eventsData = [
     date: "2025-11-14",
     time: "8:00 AM - 9:30 AM",
     venue: "Open Grounds",
+    organizer: "Prof. Ramesh Iyer",
     description: "A guided yoga session to improve focus and breathing.",
   },
   {
@@ -21,6 +23,7 @@ const eventsData = [
     date: "2025-11-20",
     time: "2:00 PM - 4:00 PM",
     venue: "Auditorium",
+    organizer: "Dr. Priya Nair",
     description: "Expert-led talk on maintaining emotional wellbeing.",
   },
 ];
