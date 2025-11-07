@@ -1,39 +1,109 @@
-import React, { useState } from "react";
-import { Card, CardContent, Typography, Button, CardActions } from "@mui/material";
+import React from "react";
+import { Card, CardContent, Typography, Button, Box } from "@mui/material";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import RoomIcon from "@mui/icons-material/Room";
 
-const EventCard = ({ event }) => {
-  const [registered, setRegistered] = useState(false);
+const EventCard = ({ title, description, date, time, location }) => {
 
   const handleRegister = () => {
-    setRegistered(true);
+    const newEvent = { title, date, time, location };
+
+    const saved = JSON.parse(localStorage.getItem("registeredEvents")) || [];
+
+    const exists = saved.some((e) => e.title === title);
+    if (exists) {
+      alert("You have already registered for this event!");
+      return;
+    }
+
+    saved.push(newEvent);
+    localStorage.setItem("registeredEvents", JSON.stringify(saved));
+
+    alert("✅ Registered Successfully!");
   };
 
   return (
-    <Card sx={{ width: 320, m: 2, borderRadius: 3, boxShadow: 4 }}>
-      <CardContent>
-        <Typography variant="h6" gutterBottom>
-          {event.title}
+    <Card
+      sx={{
+        borderRadius: 4,
+        boxShadow: "0 4px 10px rgba(0,0,0,0.10)",
+        p: 2,
+        width: 350,
+        minHeight: 300,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        backgroundColor: "white",
+      }}
+    >
+      <CardContent sx={{ pb: 1 }}>
+        
+        {/* Title */}
+        <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
+          {title}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
-          {event.description}
+
+        {/* Description */}
+        <Typography sx={{ color: "gray", mb: 2 }}>
+          {description}
         </Typography>
-        <Typography sx={{ mt: 1.5 }}>
-          📅 {event.date} | 🕒 {event.time}
-        </Typography>
-        <Typography variant="body2" sx={{ mt: 0.5 }}>
-          📍 {event.venue}
-        </Typography>
-      </CardContent>
-      <CardActions>
-        <Button
-          variant={registered ? "contained" : "outlined"}
-          color={registered ? "success" : "primary"}
-          onClick={handleRegister}
-          disabled={registered}
+
+        {/* ✅ Date + Time Row (Fixed alignment) */}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            mb: 1,
+            flexWrap: "nowrap",
+          }}
         >
-          {registered ? "Registered" : "Register"}
+          <CalendarTodayIcon fontSize="small" color="primary" />
+          <Typography sx={{ whiteSpace: "nowrap" }}>{date}</Typography>
+
+          <AccessTimeIcon fontSize="small" sx={{ ml: 2 }} />
+          <Typography sx={{ whiteSpace: "nowrap" }}>{time}</Typography>
+        </Box>
+
+        {/* ✅ Location Row (Fixed alignment) */}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          <RoomIcon fontSize="small" color="error" />
+          <Typography sx={{ whiteSpace: "nowrap" }}>
+            {location}
+          </Typography>
+        </Box>
+
+      </CardContent>
+
+      {/* Register Button */}
+      <Box sx={{ mt: 2 }}>
+        <Button
+          variant="outlined"
+          onClick={handleRegister}
+          sx={{
+            borderRadius: 2,
+            fontWeight: "bold",
+            color: "#0f766e",
+            borderColor: "#0f766e",
+            "&:hover": {
+              backgroundColor: "#e0f2f1",
+              borderColor: "#0f766e",
+            },
+          }}
+        >
+          Register
         </Button>
-      </CardActions>
+      </Box>
     </Card>
   );
 };

@@ -1,132 +1,178 @@
 import React, { useState } from "react";
 import {
-  Container,
   Box,
-  Typography,
-  TextField,
   Button,
+  TextField,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
   Paper,
-  Alert,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const navigate = useNavigate();
-
+  const [role, setRole] = useState("student");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
 
-  const studentCredentials = { username: "student123", password: "student@123" };
-  const adminCredentials = { username: "admin123", password: "admin@123" };
+  const handleRoleChange = (event, newRole) => {
+    if (newRole !== null) setRole(newRole);
+  };
 
-  const handleLogin = (e) => {
-    e.preventDefault();
+  // ✅ Demo Credentials
+  const handleStudentDemo = () => {
+    setRole("student");
+    setUsername("student123");
+    setPassword("studentpass");
+  };
 
-    if (
-      username === studentCredentials.username &&
-      password === studentCredentials.password
-    ) {
-      localStorage.setItem("userRole", "student");
-      navigate("/student-dashboard");
-    } else if (
-      username === adminCredentials.username &&
-      password === adminCredentials.password
-    ) {
-      localStorage.setItem("userRole", "admin");
-      navigate("/admin-dashboard");
+  const handleAdminDemo = () => {
+    setRole("admin");
+    setUsername("adminuser");
+    setPassword("adminpass");
+  };
+
+  const handleLogin = () => {
+    if (!username || !password) {
+      alert("Please enter username and password");
+      return;
+    }
+
+    // Store role in localStorage
+    localStorage.setItem("userRole", role);
+
+    // Redirect user
+    if (role === "student") {
+      window.location.href = "/student-dashboard";
     } else {
-      setError("Invalid username or password. Please try again.");
+      window.location.href = "/admin-dashboard";
     }
   };
 
   return (
-    <Container
-      maxWidth="sm"
+    <Box
       sx={{
+        minHeight: "100vh",
         display: "flex",
-        alignItems: "center",
         justifyContent: "center",
-        height: "100vh",
-        bgcolor: "background.default",
+        alignItems: "center",
+        backgroundColor: "#f1f5f4",
+        p: 2,
       }}
     >
       <Paper
         elevation={6}
         sx={{
-          p: 5,
+          width: 420,
           borderRadius: 4,
-          width: "100%",
-          maxWidth: 420,
+          p: 4,
           textAlign: "center",
-          boxShadow: "0px 6px 12px rgba(0,0,0,0.1)",
         }}
       >
+        {/* Title */}
         <Typography
           variant="h4"
-          gutterBottom
+          sx={{ mb: 3, color: "#0f766e", fontWeight: "bold" }}
+        >
+          Student Wellness Login
+        </Typography>
+
+        {/* Toggle Button */}
+        <ToggleButtonGroup
+          value={role}
+          exclusive
+          onChange={handleRoleChange}
           sx={{
-            fontWeight: "bold",
             mb: 3,
-            background: "linear-gradient(90deg, #0f766e, #14532d)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
+            borderRadius: 4,
+            overflow: "hidden",
+            backgroundColor: "#f3f4f6",
           }}
         >
-          Student Wellness Login 🌿
-        </Typography>
+          <ToggleButton
+            value="student"
+            sx={{ width: 140, fontWeight: "bold" }}
+          >
+            STUDENT
+          </ToggleButton>
+          <ToggleButton
+            value="admin"
+            sx={{ width: 140, fontWeight: "bold" }}
+          >
+            ADMIN
+          </ToggleButton>
+        </ToggleButtonGroup>
 
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-          </Alert>
-        )}
+        {/* Username Field */}
+        <TextField
+          label="Username *"
+          variant="outlined"
+          fullWidth
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          sx={{ mb: 2, "& .MuiOutlinedInput-root": { borderRadius: 3 } }}
+        />
 
-        <Box component="form" onSubmit={handleLogin}>
-          <TextField
-            label="Username"
-            variant="outlined"
-            fullWidth
-            required
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            label="Password"
-            variant="outlined"
-            type="password"
-            fullWidth
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            sx={{ mb: 3 }}
-          />
+        {/* Password Field */}
+        <TextField
+          label="Password *"
+          type="password"
+          variant="outlined"
+          fullWidth
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          sx={{ mb: 3, "& .MuiOutlinedInput-root": { borderRadius: 3 } }}
+        />
+
+        {/* Login Button */}
+        <Button
+          fullWidth
+          onClick={handleLogin}
+          sx={{
+            backgroundColor: "#0f766e",
+            paddingY: 1.5,
+            borderRadius: 3,
+            fontSize: "1rem",
+            fontWeight: "bold",
+            color: "#fff",
+            "&:hover": { backgroundColor: "#0d5e58" },
+            mb: 2,
+          }}
+        >
+          LOGIN
+        </Button>
+
+        {/* ✅ Demo Buttons */}
+        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
           <Button
-            variant="contained"
-            type="submit"
-            fullWidth
+            onClick={handleStudentDemo}
             sx={{
-              py: 1.3,
+              backgroundColor: "#e0f2f1",
+              color: "#0f766e",
+              width: "48%",
+              borderRadius: 2,
               fontWeight: "bold",
-              fontSize: "1rem",
-              backgroundColor: "#0f766e",
-              "&:hover": { backgroundColor: "#14532d" },
+              "&:hover": { backgroundColor: "#c6e7e4" },
             }}
           >
-            Login
+            Student Demo
+          </Button>
+
+          <Button
+            onClick={handleAdminDemo}
+            sx={{
+              backgroundColor: "#e1e1e1",
+              color: "#333",
+              width: "48%",
+              borderRadius: 2,
+              fontWeight: "bold",
+              "&:hover": { backgroundColor: "#d6d6d6" },
+            }}
+          >
+            Admin Demo
           </Button>
         </Box>
-
-        <Typography
-          variant="body2"
-          sx={{ mt: 3, color: "text.secondary", lineHeight: 1.7 }}
-        >
-          <b>Student:</b> student123 / student@123 <br />
-          <b>Admin:</b> admin123 / admin@123
-        </Typography>
       </Paper>
-    </Container>
+    </Box>
   );
 };
 
