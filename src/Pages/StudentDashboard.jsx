@@ -1,22 +1,15 @@
 import React, { useEffect, useState } from "react";
-import {
-  Grid,
-  Paper,
-  Typography,
-  Button,
-  Stack,
-  Divider,
-  Box,
-} from "@mui/material";
+import { Grid, Paper, Typography, Button, Stack, Divider } from "@mui/material";
+import { Link } from "react-router-dom"; 
 import SchoolIcon from "@mui/icons-material/School";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
-import eventsData from "../data/EventsData"; // ✅ import mock data
+import eventsData from "../data/EventsData"; // mock data
 
 export default function StudentDashboard() {
   const [events, setEvents] = useState([]);
 
-  // ✅ Load events (admin-added or mock)
+  // Load events (admin-added or mock)
   useEffect(() => {
     const storedEvents = JSON.parse(localStorage.getItem("adminEvents"));
     if (storedEvents && storedEvents.length > 0) {
@@ -28,12 +21,11 @@ export default function StudentDashboard() {
 
   return (
     <Stack spacing={3}>
-      {/* 🌿 Dashboard Header */}
+      {/* Dashboard Header */}
       <Typography variant="h4" color="primary" sx={{ fontWeight: 700 }}>
         Welcome, Student 🌿
       </Typography>
 
-      {/* 🌸 Main Sections */}
       <Grid container spacing={3}>
         {/* Well-being Overview */}
         <Grid item xs={12} md={6}>
@@ -46,7 +38,14 @@ export default function StudentDashboard() {
             <Typography color="text.secondary">
               Stay balanced with routines that support your mental and physical health.
             </Typography>
-            <Button variant="contained" sx={{ mt: 2 }}>
+
+            {/* Navigate to /daily-routine */}
+            <Button
+              component={Link}
+              to="/daily-routine"
+              variant="contained"
+              sx={{ mt: 2 }}
+            >
               View Daily Routine
             </Button>
           </Paper>
@@ -63,7 +62,13 @@ export default function StudentDashboard() {
             <Typography color="text.secondary">
               Book a confidential session with campus wellness counselors.
             </Typography>
-            <Button href="/connect" variant="contained" sx={{ mt: 2 }}>
+
+            <Button
+              component={Link}
+              to="/connect"
+              variant="contained"
+              sx={{ mt: 2 }}
+            >
               Book Session
             </Button>
           </Paper>
@@ -86,7 +91,7 @@ export default function StudentDashboard() {
           </Paper>
         </Grid>
 
-        {/* 🌿 Upcoming Events Section */}
+        {/* Upcoming Events */}
         <Grid item xs={12}>
           <Paper sx={{ p: 3 }}>
             <Stack direction="row" spacing={2} alignItems="center">
@@ -96,9 +101,7 @@ export default function StudentDashboard() {
             <Divider sx={{ my: 2 }} />
 
             {events.length === 0 ? (
-              <Typography color="text.secondary">
-                No upcoming events are  available.
-              </Typography>
+              <Typography color="text.secondary">No upcoming events available.</Typography>
             ) : (
               <Grid container spacing={2}>
                 {events.map((event) => (
