@@ -26,10 +26,13 @@ const AdminDashboard = () => {
     const storedSessions = JSON.parse(localStorage.getItem("sessions")) || [];
     setSessions(storedSessions);
 
-    const storedEvents = JSON.parse(localStorage.getItem("adminEvents")) || eventsData;
+    const storedEvents =
+      JSON.parse(localStorage.getItem("adminEvents")) || eventsData;
     setEventCount(storedEvents.length);
 
-    const storedFeedback = JSON.parse(localStorage.getItem("feedback")) || [];
+    // ✅ Correct feedback key
+    const storedFeedback =
+      JSON.parse(localStorage.getItem("feedback")) || [];
     setFeedbackCount(storedFeedback.length);
   }, []);
 
@@ -57,7 +60,6 @@ const AdminDashboard = () => {
       }}
     >
       <Box sx={{ width: "100%", maxWidth: "1100px" }}>
-        {/* Title */}
         <Typography
           variant="h4"
           sx={{
@@ -80,11 +82,17 @@ const AdminDashboard = () => {
                 borderRadius: 3,
                 textAlign: "center",
                 cursor: "pointer",
-                "&:hover": { transform: "scale(1.03)", backgroundColor: "#eafaf1" },
+                "&:hover": {
+                  transform: "scale(1.03)",
+                  backgroundColor: "#eafaf1",
+                },
                 transition: "0.2s",
               }}
             >
-              <Typography variant="h6" sx={{ fontWeight: "bold", color: "#0b5345" }}>
+              <Typography
+                variant="h6"
+                sx={{ fontWeight: "bold", color: "#0b5345" }}
+              >
                 Total Events
               </Typography>
               <Typography variant="h3" sx={{ mt: 1, color: "#0f766e" }}>
@@ -102,11 +110,17 @@ const AdminDashboard = () => {
                 borderRadius: 3,
                 textAlign: "center",
                 cursor: "pointer",
-                "&:hover": { transform: "scale(1.03)", backgroundColor: "#eafaf1" },
+                "&:hover": {
+                  transform: "scale(1.03)",
+                  backgroundColor: "#eafaf1",
+                },
                 transition: "0.2s",
               }}
             >
-              <Typography variant="h6" sx={{ fontWeight: "bold", color: "#0b5345" }}>
+              <Typography
+                variant="h6"
+                sx={{ fontWeight: "bold", color: "#0b5345" }}
+              >
                 Feedback Received
               </Typography>
               <Typography variant="h3" sx={{ mt: 1, color: "#0f766e" }}>
@@ -124,11 +138,17 @@ const AdminDashboard = () => {
                 borderRadius: 3,
                 textAlign: "center",
                 cursor: "pointer",
-                "&:hover": { transform: "scale(1.03)", backgroundColor: "#eafaf1" },
+                "&:hover": {
+                  transform: "scale(1.03)",
+                  backgroundColor: "#eafaf1",
+                },
                 transition: "0.2s",
               }}
             >
-              <Typography variant="h6" sx={{ fontWeight: "bold", color: "#0b5345" }}>
+              <Typography
+                variant="h6"
+                sx={{ fontWeight: "bold", color: "#0b5345" }}
+              >
                 Total Workshops
               </Typography>
               <Typography variant="h3" sx={{ mt: 1, color: "#0f766e" }}>
@@ -154,7 +174,11 @@ const AdminDashboard = () => {
             >
               <Typography
                 variant="h6"
-                sx={{ mb: 2, color: "#0b5345", fontWeight: "bold" }}
+                sx={{
+                  mb: 2,
+                  color: "#0b5345",
+                  fontWeight: "bold",
+                }}
               >
                 Counselors List 🩺
               </Typography>
@@ -173,10 +197,15 @@ const AdminDashboard = () => {
                       "&:hover": { backgroundColor: "#e8f6f3" },
                     }}
                   >
-                    <Avatar sx={{ bgcolor: "#0f766e" }}>{c.name.charAt(0)}</Avatar>
+                    <Avatar sx={{ bgcolor: "#0f766e" }}>
+                      {c.name.charAt(0)}
+                    </Avatar>
 
                     <Box>
-                      <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
+                      <Typography
+                        variant="subtitle1"
+                        sx={{ fontWeight: "bold" }}
+                      >
                         {c.name}
                       </Typography>
                       <Typography variant="body2" sx={{ color: "#555" }}>
@@ -216,7 +245,7 @@ const AdminDashboard = () => {
           </Grid>
         </Grid>
 
-        {/* BOOKED SESSIONS TABLE */}
+        {/* BOOKED SESSIONS */}
         <Paper elevation={6} sx={{ p: 3, borderRadius: 3 }}>
           <Typography
             variant="h5"
@@ -238,7 +267,10 @@ const AdminDashboard = () => {
                   textAlign: "center",
                   padding: "10px",
                 },
-                "& th": { backgroundColor: "#0f766e", color: "white" },
+                "& th": {
+                  backgroundColor: "#0f766e",
+                  color: "white",
+                },
               }}
             >
               <thead>
@@ -261,7 +293,9 @@ const AdminDashboard = () => {
                     <td>
                       <select
                         value={s.counselor}
-                        onChange={(e) => assignCounselor(s.id, e.target.value)}
+                        onChange={(e) =>
+                          assignCounselor(s.id, e.target.value)
+                        }
                         style={{
                           padding: "6px",
                           borderRadius: "6px",
