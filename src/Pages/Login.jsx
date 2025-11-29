@@ -1,192 +1,206 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
-  Button,
-  TextField,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography,
   Paper,
+  Typography,
+  TextField,
+  Button,
+  Stack,
 } from "@mui/material";
+import "../Pages/Login.css";
 
-const Login = () => {
-  const [role, setRole] = useState("student");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+export default function Login() {
+  const CACHE_KEY = "swell_login_cache_v1";
 
-  const handleRoleChange = (event, newRole) => {
-    if (newRole !== null) setRole(newRole);
-  };
+  // Load cache
+  const initial = (() => {
+    try {
+      const raw = localStorage.getItem(CACHE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch {}
+    return { role: "student", username: "", password: "" };
+  })();
 
-  // Demo Logins
-  const handleStudentDemo = () => {
-    setRole("student");
-    setUsername("student123");
-    setPassword("studentpass");
-  };
+  const [role, setRole] = useState(initial.role || "student");
+  const [username, setUsername] = useState(initial.username || "");
+  const [password, setPassword] = useState(initial.password || "");
+  const [busy, setBusy] = useState(false);
 
-  const handleAdminDemo = () => {
-    setRole("admin");
-    setUsername("adminuser");
-    setPassword("adminpass");
-  };
+  // CAPTCHA states
+  const [captcha, setCaptcha] = useState("");
+  const [captchaInput, setCaptchaInput] = useState("");
 
-  const handleCounsellorDemo = () => {
-    setRole("counsellor");
-    setUsername("counsellor1");
-    setPassword("counsellorpass");
-  };
+  // Save cache
+  useEffect(() => {
+    try {
+      const payload = { role, username, password };
+      localStorage.setItem(CACHE_KEY, JSON.stringify(payload));
+    } catch {}
+  }, [role, username, password]);
 
-  const handleLogin = () => {
-    if (!username || !password) {
-      alert("Please enter username and password");
+  // Generate CAPTCHA
+  function generateCaptcha() {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    let code = "";
+    for (let i = 0; i < 5; i++) {
+      code += chars[Math.floor(Math.random() * chars.length)];
+    }
+    setCaptcha(code);
+  }
+
+  useEffect(() => {
+    generateCaptcha();
+  }, []);
+
+  function fillDemo(roleKey) {
+    if (roleKey === "student") {
+      setRole("student");
+      setUsername("student@wellness.com");
+      setPassword("student123");
+    } else if (roleKey === "admin") {
+      setRole("admin");
+      setUsername("admin@wellness.com");
+      setPassword("admin123");
+    } else if (roleKey === "counsellor") {
+      setRole("counsellor");
+      setUsername("counsellor@wellness.com");
+      setPassword("counsellor123");
+    }
+    generateCaptcha();
+    setCaptchaInput("");
+  }
+
+  function onSubmit(e) {
+    e.preventDefault();
+
+    if (captchaInput.trim().toUpperCase() !== captcha.toUpperCase()) {
+      alert("Incorrect CAPTCHA. Try again.");
+      generateCaptcha();
+      setCaptchaInput("");
       return;
     }
 
-    localStorage.setItem("userRole", role);
-
-    if (role === "student") {
-      window.location.href = "/student-dashboard";
-    } else if (role === "admin") {
-      window.location.href = "/admin-dashboard";
-    } else if (role === "counsellor") {
-      localStorage.setItem("counsellorName", username);
-      window.location.href = "/counsellor-dashboard";
+    if (!username.trim() || !password) {
+      alert("Please enter username & password.");
+      return;
     }
-  };
+
+    setBusy(true);
+    setTimeout(() => {
+      setBusy(false);
+      alert(`Logged in as ${role}`);
+    }, 700);
+  }
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#f1f5f4",
-        p: 2,
-      }}
-    >
-      <Paper
-        elevation={6}
-        sx={{
-          width: 420,
-          borderRadius: 4,
-          p: 4,
-          textAlign: "center",
-        }}
-      >
-        <Typography
-          variant="h4"
-          sx={{ mb: 3, color: "#0f766e", fontWeight: "bold" }}
-        >
+    <Box className="login-page-outer">
+      <Paper elevation={6} className="login-card">
+        <Typography variant="h4" className="login-title">
           Student Wellness Login
         </Typography>
 
-        <ToggleButtonGroup
-          value={role}
-          exclusive
-          onChange={handleRoleChange}
-          sx={{
-            mb: 3,
-            borderRadius: 4,
-            overflow: "hidden",
-            backgroundColor: "#f3f4f6",
-          }}
-        >
-          <ToggleButton value="student" sx={{ width: 140, fontWeight: "bold" }}>
-            STUDENT
-          </ToggleButton>
-          <ToggleButton value="admin" sx={{ width: 140, fontWeight: "bold" }}>
-            ADMIN
-          </ToggleButton>
-          <ToggleButton
-            value="counsellor"
-            sx={{ width: 150, fontWeight: "bold" }}
+        {/* ROLE SELECTOR */}
+        <div className="role-selector">
+          <button
+            className={`role-btn ${role === "student" ? "active-role" : ""}`}
+            onClick={() => setRole("student")}
+            type="button"
           >
-            COUNSELLOR
-          </ToggleButton>
-        </ToggleButtonGroup>
+            Student
+          </button>
 
-        <TextField
-          label="Username *"
-          variant="outlined"
-          fullWidth
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          sx={{ mb: 2, "& .MuiOutlinedInput-root": { borderRadius: 3 } }}
-        />
-
-        <TextField
-          label="Password *"
-          type="password"
-          variant="outlined"
-          fullWidth
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          sx={{ mb: 3, "& .MuiOutlinedInput-root": { borderRadius: 3 } }}
-        />
-
-        <Button
-          fullWidth
-          onClick={handleLogin}
-          sx={{
-            backgroundColor: "#0f766e",
-            paddingY: 1.5,
-            borderRadius: 3,
-            fontSize: "1rem",
-            fontWeight: "bold",
-            color: "#fff",
-            "&:hover": { backgroundColor: "#0d5e58" },
-            mb: 2,
-          }}
-        >
-          LOGIN
-        </Button>
-
-        {/* Demo Buttons */}
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-          <Button
-            onClick={handleStudentDemo}
-            sx={{
-              backgroundColor: "#e0f2f1",
-              color: "#0f766e",
-              borderRadius: 2,
-              fontWeight: "bold",
-              "&:hover": { backgroundColor: "#c6e7e4" },
-            }}
+          <button
+            className={`role-btn ${role === "admin" ? "active-role" : ""}`}
+            onClick={() => setRole("admin")}
+            type="button"
           >
-            Student Demo
-          </Button>
+            Admin
+          </button>
 
-          <Button
-            onClick={handleAdminDemo}
-            sx={{
-              backgroundColor: "#e1e1e1",
-              color: "#333",
-              borderRadius: 2,
-              fontWeight: "bold",
-              "&:hover": { backgroundColor: "#d6d6d6" },
-            }}
+          <button
+            className={`role-btn ${role === "counsellor" ? "active-role" : ""}`}
+            onClick={() => setRole("counsellor")}
+            type="button"
           >
-            Admin Demo
-          </Button>
+            Counsellor
+          </button>
+        </div>
+
+        <form className="login-form" onSubmit={onSubmit}>
+          <TextField
+            label="Username *"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            fullWidth
+            size="small"
+            className="login-input"
+          />
+
+          <TextField
+            label="Password *"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            fullWidth
+            size="small"
+            className="login-input"
+          />
+
+          {/* CAPTCHA */}
+          <Stack spacing={1} sx={{ mt: 1 }}>
+            <Typography sx={{ fontWeight: 600, fontSize: "14px" }}>
+              Enter CAPTCHA *
+            </Typography>
+
+            <Box className="captcha-box">
+              <span className="captcha-text">{captcha}</span>
+              <button
+                type="button"
+                className="captcha-refresh"
+                onClick={() => {
+                  generateCaptcha();
+                  setCaptchaInput("");
+                }}
+              >
+                ↻
+              </button>
+            </Box>
+
+            <TextField
+              placeholder="Enter the code above"
+              value={captchaInput}
+              onChange={(e) => setCaptchaInput(e.target.value)}
+              fullWidth
+              size="small"
+              className="login-input"
+            />
+          </Stack>
 
           <Button
-            onClick={handleCounsellorDemo}
-            sx={{
-              backgroundColor: "#e8e4ff",
-              color: "#4a2ea3",
-              borderRadius: 2,
-              fontWeight: "bold",
-              "&:hover": { backgroundColor: "#d9d3ff" },
-            }}
+            variant="contained"
+            type="submit"
+            fullWidth
+            disabled={busy}
+            className="login-button"
+            sx={{ mt: 1 }}
           >
-            Counsellor Demo
+            {busy ? "Please wait..." : "LOGIN"}
           </Button>
-        </Box>
+
+          {/* DEMO BUTTONS */}
+          <Stack spacing={1} sx={{ mt: 2 }}>
+            <Button variant="outlined" onClick={() => fillDemo("student")}>
+              Student Demo
+            </Button>
+            <Button variant="outlined" onClick={() => fillDemo("admin")}>
+              Admin Demo
+            </Button>
+            <Button variant="outlined" onClick={() => fillDemo("counsellor")}>
+              Counsellor Demo
+            </Button>
+          </Stack>
+        </form>
       </Paper>
     </Box>
   );
-};
-
-export default Login;
+}
