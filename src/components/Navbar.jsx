@@ -8,7 +8,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("userRole");
-    navigate("/login"); // redirect to login after logout
+    navigate("/"); // ✅ FIXED: redirect to login route
   };
 
   return (
@@ -22,7 +22,6 @@ const Navbar = () => {
       }}
     >
       <Toolbar>
-        {/* 🌿 Dynamic Title / Dashboard Link */}
         <Typography
           variant="h6"
           component={Link}
@@ -49,14 +48,11 @@ const Navbar = () => {
             : "Student Wellness 🌿"}
         </Typography>
 
-        {/* 🌸 Nav Links Section */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          {/* Common Link */}
           <Button component={Link} to="/about" sx={{ color: "#fff" }}>
             About
           </Button>
 
-          {/* STUDENT NAV LINKS */}
           {userRole === "student" && (
             <>
               <Button component={Link} to="/events" sx={{ color: "#fff" }}>
@@ -68,58 +64,20 @@ const Navbar = () => {
               <Button component={Link} to="/feedback" sx={{ color: "#fff" }}>
                 Feedback
               </Button>
-              {/* 🌸 Student Dashboard Button */}
-              <Button
-                component={Link}
-                to="/student-dashboard"
-                sx={{
-                  color: "#fff",
-                  fontWeight: "bold",
-                  border: "2px solid transparent",
-                  "&:hover": {
-                    borderColor: "#fff",
-                    borderRadius: "8px",
-                  },
-                }}
-              >
-                Student Dashboard
-              </Button>
             </>
           )}
 
-          {/* ADMIN NAV LINKS */}
           {userRole === "admin" && (
             <>
               <Button component={Link} to="/admin/events" sx={{ color: "#fff" }}>
                 Manage Events
               </Button>
-              <Button
-                component={Link}
-                to="/admin/feedback"
-                sx={{ color: "#fff" }}
-              >
+              <Button component={Link} to="/admin-feedback" sx={{ color: "#fff" }}>
                 Review Feedback
-              </Button>
-              {/* 🌿 Admin Dashboard Button */}
-              <Button
-                component={Link}
-                to="/admin-dashboard"
-                sx={{
-                  color: "#fff",
-                  fontWeight: "bold",
-                  border: "2px solid transparent",
-                  "&:hover": {
-                    borderColor: "#fff",
-                    borderRadius: "8px",
-                  },
-                }}
-              >
-                Admin Dashboard
               </Button>
             </>
           )}
 
-          {/* Logout Button */}
           {userRole && (
             <Button
               onClick={handleLogout}
