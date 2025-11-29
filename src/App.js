@@ -21,6 +21,12 @@ import AdminFeedback from "./Pages/AdminFeedback";
 
 // ✅ DailyRoutine page (ADD THIS IMPORT)
 import DailyRoutine from "./Pages/DailyRoutine";
+import StudyPlanner from "./Pages/StudyPlanner";
+import MindfulBreathing from "./Pages/MindfulBreathing";
+import SleepHygiene from "./Pages/SleepHygiene";
+import NutritionBasics from "./Pages/NutritionBasics";
+
+
 
 function App() {
   return (
@@ -54,6 +60,42 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+  path="/study-planner"
+  element={
+    <ProtectedRoute allowedRoles={["student"]}>
+      <StudyPlanner />
+    </ProtectedRoute>
+  }
+/>
+
+              <Route
+  path="/mindful-breathing"
+  element={
+    <ProtectedRoute allowedRoles={["student"]}>
+      <MindfulBreathing />
+    </ProtectedRoute>
+  }
+/>
+         <Route
+  path="/sleep-hygiene"
+  element={
+    <ProtectedRoute allowedRoles={["student"]}>
+      <SleepHygiene />
+    </ProtectedRoute>
+  }
+/>
+
+   <Route
+  path="/nutrition-basics"
+  element={
+    <ProtectedRoute allowedRoles={["student"]}>
+      <NutritionBasics />
+    </ProtectedRoute>
+  }
+/>
+
+
 
             <Route
               path="/events"
