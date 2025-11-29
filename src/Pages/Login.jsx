@@ -18,7 +18,7 @@ const Login = () => {
     if (newRole !== null) setRole(newRole);
   };
 
-  // ✅ Demo Credentials
+  // Demo Logins
   const handleStudentDemo = () => {
     setRole("student");
     setUsername("student123");
@@ -31,20 +31,27 @@ const Login = () => {
     setPassword("adminpass");
   };
 
+  const handleCounsellorDemo = () => {
+    setRole("counsellor");
+    setUsername("counsellor1");
+    setPassword("counsellorpass");
+  };
+
   const handleLogin = () => {
     if (!username || !password) {
       alert("Please enter username and password");
       return;
     }
 
-    // Store role in localStorage
     localStorage.setItem("userRole", role);
 
-    // Redirect user
     if (role === "student") {
       window.location.href = "/student-dashboard";
-    } else {
+    } else if (role === "admin") {
       window.location.href = "/admin-dashboard";
+    } else if (role === "counsellor") {
+      localStorage.setItem("counsellorName", username);
+      window.location.href = "/counsellor-dashboard";
     }
   };
 
@@ -68,7 +75,6 @@ const Login = () => {
           textAlign: "center",
         }}
       >
-        {/* Title */}
         <Typography
           variant="h4"
           sx={{ mb: 3, color: "#0f766e", fontWeight: "bold" }}
@@ -76,7 +82,6 @@ const Login = () => {
           Student Wellness Login
         </Typography>
 
-        {/* Toggle Button */}
         <ToggleButtonGroup
           value={role}
           exclusive
@@ -88,21 +93,20 @@ const Login = () => {
             backgroundColor: "#f3f4f6",
           }}
         >
-          <ToggleButton
-            value="student"
-            sx={{ width: 140, fontWeight: "bold" }}
-          >
+          <ToggleButton value="student" sx={{ width: 140, fontWeight: "bold" }}>
             STUDENT
           </ToggleButton>
-          <ToggleButton
-            value="admin"
-            sx={{ width: 140, fontWeight: "bold" }}
-          >
+          <ToggleButton value="admin" sx={{ width: 140, fontWeight: "bold" }}>
             ADMIN
+          </ToggleButton>
+          <ToggleButton
+            value="counsellor"
+            sx={{ width: 150, fontWeight: "bold" }}
+          >
+            COUNSELLOR
           </ToggleButton>
         </ToggleButtonGroup>
 
-        {/* Username Field */}
         <TextField
           label="Username *"
           variant="outlined"
@@ -112,7 +116,6 @@ const Login = () => {
           sx={{ mb: 2, "& .MuiOutlinedInput-root": { borderRadius: 3 } }}
         />
 
-        {/* Password Field */}
         <TextField
           label="Password *"
           type="password"
@@ -123,7 +126,6 @@ const Login = () => {
           sx={{ mb: 3, "& .MuiOutlinedInput-root": { borderRadius: 3 } }}
         />
 
-        {/* Login Button */}
         <Button
           fullWidth
           onClick={handleLogin}
@@ -141,14 +143,13 @@ const Login = () => {
           LOGIN
         </Button>
 
-        {/* ✅ Demo Buttons */}
-        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
+        {/* Demo Buttons */}
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
           <Button
             onClick={handleStudentDemo}
             sx={{
               backgroundColor: "#e0f2f1",
               color: "#0f766e",
-              width: "48%",
               borderRadius: 2,
               fontWeight: "bold",
               "&:hover": { backgroundColor: "#c6e7e4" },
@@ -162,13 +163,25 @@ const Login = () => {
             sx={{
               backgroundColor: "#e1e1e1",
               color: "#333",
-              width: "48%",
               borderRadius: 2,
               fontWeight: "bold",
               "&:hover": { backgroundColor: "#d6d6d6" },
             }}
           >
             Admin Demo
+          </Button>
+
+          <Button
+            onClick={handleCounsellorDemo}
+            sx={{
+              backgroundColor: "#e8e4ff",
+              color: "#4a2ea3",
+              borderRadius: 2,
+              fontWeight: "bold",
+              "&:hover": { backgroundColor: "#d9d3ff" },
+            }}
+          >
+            Counsellor Demo
           </Button>
         </Box>
       </Paper>

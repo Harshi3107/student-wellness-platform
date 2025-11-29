@@ -1,86 +1,181 @@
 import React, { useState } from "react";
-import "./Connect.css";
+import {
+  Box,
+  Paper,
+  Typography,
+  TextField,
+  Button,
+  MenuItem,
+  Stack,
+} from "@mui/material";
+
+const concerns = [
+  "Academic Stress",
+  "Anxiety",
+  "Family Issues",
+  "Relationships",
+  "Career Confusion",
+  "Other",
+];
 
 const Connect = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    date: "",
-    concern: "",
-  });
-
-  const [sessions, setSessions] = useState(
-    JSON.parse(localStorage.getItem("sessions")) || []
-  );
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  const [name, setName] = useState(localStorage.getItem("studentName") || "");
+  const [email, setEmail] = useState(localStorage.getItem("studentEmail") || "");
+  const [rollNumber, setRollNumber] = useState("");
+  const [selectedConcern, setSelectedConcern] = useState("");
+  const [details, setDetails] = useState("");
+  const [preferredDate, setPreferredDate] = useState("");
+  const [message, setMessage] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.email || !formData.date) {
-      alert("Please fill in all required fields.");
+
+    if (!name || !email || !preferredDate || !selectedConcern) {
+      setMessage("Please fill in all required fields.");
       return;
     }
 
-    const newSession = { ...formData, id: Date.now(), counselor: "Unassigned" };
-    const updatedSessions = [...sessions, newSession];
+    // Persist student info for later use
+    localStorage.setItem("studentName", name);
+    localStorage.setItem("studentEmail", email);
 
-    // Save to localStorage (frontend-only storage)
-    localStorage.setItem("sessions", JSON.stringify(updatedSessions));
-    setSessions(updatedSessions);
+    const existing = JSON.parse(localStorage.getItem("sessions")) || [];
 
-    alert("Your session has been booked successfully!");
-    setFormData({ name: "", email: "", date: "", concern: "" });
+    const newSession = {
+      id: Date.now(),
+      name,
+      email,
+      rollNumber,
+      concern: selectedConcern,
+      details,
+      date: preferredDate,      // yyyy-mm-dd
+      counselor: "",            // admin will assign later
+      status: "Requested",      // admin/counsellor will move to Scheduled/Completed
+      notes: "",
+    };
+
+    const updated = [...existing, newSession];
+    localStorage.setItem("sessions", JSON.stringify(updated));
+
+    setMessage("Your counselling request has been submitted.");
+    setSelectedConcern("");
+    setDetails("");
+    setPreferredDate("");
   };
 
   return (
-    <div className="connect-container">
-      <h2>Book a Counseling Session</h2>
-      <form onSubmit={handleSubmit} className="connect-form">
-        <label>Name*</label>
-        <input
-          type="text"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          required
-        />
+    <Box
+      sx={{
+        minHeight: "100vh",
+        background: "linear-gradient(to bottom right, #e8f6f3, #f5fffd)",
+        display: "flex",
+        justifyContent: "center",
+        p: 3,
+      }}
+    >
+      <Box sx={{ width: "100%", maxWidth: 700 }}>
+        <Paper
+          sx={{
+            p: 3,
+            borderRadius: 3,
+            boxShadow: "0 4px 14px rgba(0,0,0,0.08)",
+          }}
+        >
+          <Typography
+            variant="h5"
+            sx={{ mb: 2, fontWeight: 800, color: "#064e3b" }}
+          >
+            Book a Counselling Session 💬
+          </Typography>
+          <Typography sx={{ mb: 3, color: "#555" }}>
+            Your details are confidential. The counsellor will review your
+            request and you can track updates under <b>My Sessions</b>.
+          </Typography>
 
-        <label>Email*</label>
-        <input
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
+          <form onSubmit={handleSubmit}>
+            <Stack spacing={2}>
+              <TextField
+                label="Full Name"
+                fullWidth
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
 
-        <label>Date*</label>
-        <input
-          type="date"
-          name="date"
-          value={formData.date}
-          onChange={handleChange}
-          required
-        />
+              <TextField
+                label="College Email"
+                type="email"
+                fullWidth
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
 
-        <label>Concern</label>
-        <textarea
-          name="concern"
-          rows="3"
-          placeholder="Share briefly what you'd like to discuss..."
-          value={formData.concern}
-          onChange={handleChange}
-        ></textarea>
+              <TextField
+                label="Roll Number (optional)"
+                fullWidth
+                value={rollNumber}
+                onChange={(e) => setRollNumber(e.target.value)}
+              />
 
-        <button type="submit" className="submit-btn">
-          Submit
-        </button>
-      </form>
-    </div>
+              <TextField
+                select
+                label="Primary Concern"
+                fullWidth
+                value={selectedConcern}
+                onChange={(e) => setSelectedConcern(e.target.value)}
+                required
+              >
+                {concerns.map((c) => (
+                  <MenuItem key={c} value={c}>
+                    {c}
+                  </MenuItem>
+                ))}
+              </TextField>
+
+              <TextField
+                label="Additional Details (optional)"
+                multiline
+                minRows={3}
+                fullWidth
+                value={details}
+                onChange={(e) => setDetails(e.target.value)}
+              />
+
+              <TextField
+                label="Preferred Date"
+                type="date"
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+                value={preferredDate}
+                onChange={(e) => setPreferredDate(e.target.value)}
+                required
+              />
+
+              <Button
+                type="submit"
+                variant="contained"
+                sx={{
+                  mt: 1,
+                  backgroundColor: "#0f766e",
+                  "&:hover": { backgroundColor: "#0b5149" },
+                  borderRadius: 2,
+                  fontWeight: 600,
+                }}
+              >
+                Submit Request
+              </Button>
+
+              {message && (
+                <Typography sx={{ mt: 1, color: "#0f766e" }}>
+                  {message}
+                </Typography>
+              )}
+            </Stack>
+          </form>
+        </Paper>
+      </Box>
+    </Box>
   );
 };
 

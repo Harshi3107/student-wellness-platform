@@ -21,23 +21,28 @@ import StudentDashboard from "./Pages/StudentDashboard";
 import Connect from "./Pages/Connect";
 import Feedback from "./Pages/Feedback";
 import Events from "./Pages/Events";
+
 import AdminDashboard from "./Pages/AdminDashboard";
 import AdminEvents from "./Pages/AdminEvents";
 import AdminFeedback from "./Pages/AdminFeedback";
+
+import CounsellorDashboard from "./Pages/CounsellorDashboard";
+import CounsellorSessions from "./Pages/CounsellorSessions";
+import CounsellorNotes from "./Pages/CounsellorNotes";
+
+import StudentSessions from "./Pages/StudentSessions";
+import AdminSessions from "./Pages/AdminSessions";
+
+// Student Wellness Add-ons
 import DailyRoutine from "./Pages/DailyRoutine";
 import StudyPlanner from "./Pages/StudyPlanner";
 import MindfulBreathing from "./Pages/MindfulBreathing";
 import SleepHygiene from "./Pages/SleepHygiene";
 import NutritionBasics from "./Pages/NutritionBasics";
 
-
-// -----------------------
-// Wrapper to hide Navbar on login
-// -----------------------
+// --------------------
 function AppContent() {
   const location = useLocation();
-
-  // Hide navbar only on login
   const hideNavbar = location.pathname === "/";
 
   return (
@@ -46,12 +51,12 @@ function AppContent() {
 
       <Box sx={{ p: hideNavbar ? 0 : 3, minHeight: "100vh" }}>
         <Routes>
-          {/* Public Routes */}
+          {/* Public */}
           <Route path="/" element={<Login />} />
           <Route path="/about" element={<About />} />
           <Route path="/feedback" element={<Feedback />} />
 
-          {/* Student Routes */}
+          {/* Student */}
           <Route
             path="/student-dashboard"
             element={
@@ -60,7 +65,6 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/daily-routine"
             element={
@@ -69,7 +73,6 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/study-planner"
             element={
@@ -78,7 +81,6 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/mindful-breathing"
             element={
@@ -87,7 +89,6 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/sleep-hygiene"
             element={
@@ -96,7 +97,6 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/nutrition-basics"
             element={
@@ -105,7 +105,6 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/events"
             element={
@@ -114,7 +113,6 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/connect"
             element={
@@ -123,8 +121,16 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/student-sessions"
+            element={
+              <ProtectedRoute allowedRoles={["student"]}>
+                <StudentSessions />
+              </ProtectedRoute>
+            }
+          />
 
-          {/* Admin Routes */}
+          {/* Admin */}
           <Route
             path="/admin-dashboard"
             element={
@@ -133,7 +139,6 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/admin-events"
             element={
@@ -142,12 +147,45 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/admin-feedback"
             element={
               <ProtectedRoute allowedRoles={["admin"]}>
                 <AdminFeedback />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin-sessions"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdminSessions />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Counsellor */}
+          <Route
+            path="/counsellor-dashboard"
+            element={
+              <ProtectedRoute allowedRoles={["counsellor"]}>
+                <CounsellorDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/sessions"
+            element={
+              <ProtectedRoute allowedRoles={["counsellor"]}>
+                <CounsellorSessions />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/session-details"
+            element={
+              <ProtectedRoute allowedRoles={["counsellor"]}>
+                <CounsellorNotes />
               </ProtectedRoute>
             }
           />
@@ -157,11 +195,8 @@ function AppContent() {
   );
 }
 
-
-// -----------------------
-// Main App
-// -----------------------
-function App() {
+// --------------------
+export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -171,5 +206,3 @@ function App() {
     </ThemeProvider>
   );
 }
-
-export default App;

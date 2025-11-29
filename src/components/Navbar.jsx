@@ -8,16 +8,11 @@ const Navbar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("userRole");
-    navigate("/"); // redirect to login after logout
+    localStorage.removeItem("counsellorName");
+    localStorage.removeItem("studentEmail");
+    localStorage.removeItem("studentName");
+    navigate("/");
   };
-
-  // 🟢 Dashboard Redirect Based on Role
-  const dashboardPath =
-    userRole === "admin"
-      ? "/admin-dashboard"
-      : userRole === "student"
-      ? "/student-dashboard"
-      : "/";
 
   return (
     <AppBar
@@ -30,11 +25,18 @@ const Navbar = () => {
       }}
     >
       <Toolbar>
-        {/* 🌿 Title - Now correctly redirects depending on login */}
         <Typography
           variant="h6"
           component={Link}
-          to={dashboardPath}
+          to={
+            userRole === "admin"
+              ? "/admin-dashboard"
+              : userRole === "student"
+              ? "/student-dashboard"
+              : userRole === "counsellor"
+              ? "/counsellor-dashboard"
+              : "/"
+          }
           sx={{
             flexGrow: 1,
             color: "#fff",
@@ -48,11 +50,13 @@ const Navbar = () => {
             ? "Admin Dashboard 🌿"
             : userRole === "student"
             ? "Student Dashboard 🌿"
+            : userRole === "counsellor"
+            ? "Counsellor Dashboard 🌿"
             : "Student Wellness 🌿"}
         </Typography>
 
-        {/* NAV LINKS */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          {/* Public */}
           <Button component={Link} to="/about" sx={{ color: "#fff" }}>
             About
           </Button>
@@ -61,10 +65,17 @@ const Navbar = () => {
           {userRole === "student" && (
             <>
               <Button component={Link} to="/events" sx={{ color: "#fff" }}>
-                Events & Workshops
+                Events
               </Button>
               <Button component={Link} to="/connect" sx={{ color: "#fff" }}>
-                Connect
+                Book Session
+              </Button>
+              <Button
+                component={Link}
+                to="/student-sessions"
+                sx={{ color: "#fff" }}
+              >
+                My Sessions
               </Button>
               <Button component={Link} to="/feedback" sx={{ color: "#fff" }}>
                 Feedback
@@ -72,14 +83,9 @@ const Navbar = () => {
               <Button
                 component={Link}
                 to="/student-dashboard"
-                sx={{
-                  color: "#fff",
-                  fontWeight: "bold",
-                  border: "2px solid transparent",
-                  "&:hover": { borderColor: "#fff", borderRadius: "8px" },
-                }}
+                sx={{ color: "#fff" }}
               >
-                Student Dashboard
+                Dashboard
               </Button>
             </>
           )}
@@ -95,24 +101,49 @@ const Navbar = () => {
                 to="/admin-feedback"
                 sx={{ color: "#fff" }}
               >
-                Review Feedback
+                Feedback
+              </Button>
+              <Button
+                component={Link}
+                to="/admin-sessions"
+                sx={{ color: "#fff" }}
+              >
+                Manage Sessions
               </Button>
               <Button
                 component={Link}
                 to="/admin-dashboard"
-                sx={{
-                  color: "#fff",
-                  fontWeight: "bold",
-                  border: "2px solid transparent",
-                  "&:hover": { borderColor: "#fff", borderRadius: "8px" },
-                }}
+                sx={{ color: "#fff" }}
               >
-                Admin Dashboard
+                Dashboard
               </Button>
             </>
           )}
 
-          {/* LOGOUT */}
+          {/* COUNSELLOR NAV */}
+          {userRole === "counsellor" && (
+            <>
+              <Button
+                component={Link}
+                to="/counsellor-dashboard"
+                sx={{ color: "#fff" }}
+              >
+                Dashboard
+              </Button>
+              <Button component={Link} to="/sessions" sx={{ color: "#fff" }}>
+                Sessions
+              </Button>
+              <Button
+                component={Link}
+                to="/session-details"
+                sx={{ color: "#fff" }}
+              >
+                Session Details & Notes
+              </Button>
+            </>
+          )}
+
+          {/* Logout */}
           {userRole && (
             <Button
               onClick={handleLogout}
