@@ -3,13 +3,14 @@ import { Box, Typography, Paper, Grid, Avatar, Stack } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
+
 import eventsData from "../data/EventsData";
 import { initialWorkshops } from "../data/workshopData";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const [sessions, setSessions] = useState([]);
 
+  const [sessions, setSessions] = useState([]);
   const [counselors] = useState([
     { name: "Dr. Meena Sharma", specialty: "Mindfulness & Meditation" },
     { name: "Dr. Rohan Patel", specialty: "Stress Management" },
@@ -30,7 +31,7 @@ const AdminDashboard = () => {
 
     const storedFeedback =
       JSON.parse(localStorage.getItem("feedback")) || [];
-    setFeedbackCount(storedFeedback.length || 0);
+    setFeedbackCount(storedFeedback.length);
   }, []);
 
   const assignCounselor = (id, counselor) => {
@@ -41,7 +42,7 @@ const AdminDashboard = () => {
     localStorage.setItem("sessions", JSON.stringify(updated));
   };
 
-  const events = sessions.map((s) => ({
+  const calendarEvents = sessions.map((s) => ({
     title: `${s.name} (${s.counselor || "Unassigned"})`,
     start: s.date,
   }));
@@ -50,140 +51,122 @@ const AdminDashboard = () => {
     <Box
       sx={{
         padding: 4,
-        backgroundColor: "#f5f9f8",
+        background: "linear-gradient(to bottom right, #e8f6f3, #f5fffd)",
         minHeight: "100vh",
         display: "flex",
         justifyContent: "center",
       }}
     >
-      {/* ✅ CENTER CONTENT */}
-      <Box sx={{ width: "100%", maxWidth: "1100px", mx: "auto" }}>
+      <Box
+        sx={{
+          width: "100%",
+          maxWidth: "1200px",
+          margin: "0 auto",
+          display: "flex",
+          flexDirection: "column",
+          gap: 4,
+        }}
+      >
+        {/* Dashboard Title */}
         <Typography
           variant="h4"
           sx={{
-            fontWeight: "bold",
-            color: "#0b5345",
-            mb: 4,
+            textAlign: "center",
+            fontWeight: "900",
+            color: "#064e3b",
+            letterSpacing: "1px",
+            textShadow: "1px 1px #d9f7f0",
           }}
         >
-          Admin Dashboard 🌿
+          Admin Wellness Dashboard 🌿
         </Typography>
 
-        {/* ✅ TOP CARDS - CENTERED */}
-        <Grid container spacing={3} sx={{ mb: 3 }} justifyContent="center">
-          <Grid item xs={12} sm={6} md={4}>
-            <Paper
-              elevation={4}
-              onClick={() => navigate("/admin/events")}
-              sx={{
-                p: 3,
-                borderRadius: 3,
-                textAlign: "center",
-                cursor: "pointer",
-                "&:hover": { transform: "scale(1.03)", backgroundColor: "#eafaf1" },
-                transition: "0.2s",
-              }}
-            >
-              <Typography variant="h6" sx={{ fontWeight: "bold", color: "#0b5345" }}>
-                Total Events
-              </Typography>
-              <Typography variant="h3" sx={{ mt: 1, color: "#0f766e" }}>
-                {eventCount}
-              </Typography>
-            </Paper>
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={4}>
-            <Paper
-              elevation={4}
-              onClick={() => navigate("/admin/feedback")}
-              sx={{
-                p: 3,
-                borderRadius: 3,
-                textAlign: "center",
-                cursor: "pointer",
-                "&:hover": { transform: "scale(1.03)", backgroundColor: "#eafaf1" },
-                transition: "0.2s",
-              }}
-            >
-              <Typography variant="h6" sx={{ fontWeight: "bold", color: "#0b5345" }}>
-                Feedback Received
-              </Typography>
-              <Typography variant="h3" sx={{ mt: 1, color: "#0f766e" }}>
-                {feedbackCount}
-              </Typography>
-            </Paper>
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={4}>
-            <Paper
-              elevation={4}
-              onClick={() => navigate("/admin/events")}
-              sx={{
-                p: 3,
-                borderRadius: 3,
-                textAlign: "center",
-                cursor: "pointer",
-                "&:hover": { transform: "scale(1.03)", backgroundColor: "#eafaf1" },
-                transition: "0.2s",
-              }}
-            >
-              <Typography variant="h6" sx={{ fontWeight: "bold", color: "#0b5345" }}>
-                Total Workshops
-              </Typography>
-              <Typography variant="h3" sx={{ mt: 1, color: "#0f766e" }}>
-                {initialWorkshops.length}
-              </Typography>
-            </Paper>
-          </Grid>
+        {/* TOP CARDS */}
+        <Grid container spacing={3}>
+          {/* Card Component */}
+          {[ 
+            { title: "Total Events", value: eventCount, link: "/admin-events" },
+            { title: "Feedback Received", value: feedbackCount, link: "/admin-feedback" },
+            { title: "Total Workshops", value: initialWorkshops.length, link: "/admin-events" }
+          ].map((card, idx) => (
+            <Grid item xs={12} sm={6} md={4} key={idx}>
+              <Paper
+                elevation={6}
+                onClick={() => navigate(card.link)}
+                sx={{
+                  p: 3,
+                  borderRadius: "20px",
+                  textAlign: "center",
+                  cursor: "pointer",
+                  background: "rgba(255, 255, 255, 0.8)",
+                  backdropFilter: "blur(10px)",
+                  boxShadow: "0px 6px 20px rgba(0,0,0,0.08)",
+                  transition: "0.3s",
+                  "&:hover": {
+                    transform: "translateY(-6px)",
+                    background: "#ffffff",
+                  },
+                }}
+              >
+                <Typography variant="h6" sx={{ color: "#0b5345", fontWeight: 700 }}>
+                  {card.title}
+                </Typography>
+                <Typography variant="h3" sx={{ mt: 1, color: "#0f766e", fontWeight: 800 }}>
+                  {card.value}
+                </Typography>
+              </Paper>
+            </Grid>
+          ))}
         </Grid>
 
-        {/* ✅ COUNSELORS + CALENDAR CENTERED */}
-        <Grid container spacing={3} sx={{ mb: 4 }} justifyContent="center">
-          
-          {/* LEFT: COUNSELORS */}
+        {/* COUNSELORS + CALENDAR */}
+        <Grid container spacing={3}>
+          {/* Counselors Box */}
           <Grid item xs={12} md={4}>
             <Paper
-              elevation={4}
+              elevation={8}
               sx={{
                 p: 3,
-                borderRadius: 3,
-                height: "520px",
-                display: "flex",
-                flexDirection: "column",
+                borderRadius: 4,
+                height: "540px",
+                background: "linear-gradient(to bottom, #ffffff, #f0fefa)",
+                boxShadow: "0px 6px 20px rgba(0,0,0,0.08)",
               }}
             >
               <Typography
                 variant="h6"
-                sx={{ mb: 2, color: "#0b5345", fontWeight: "bold" }}
+                sx={{
+                  fontWeight: 700,
+                  color: "#0b5345",
+                  mb: 2,
+                }}
               >
                 Counselors List 🩺
               </Typography>
 
-              <Stack spacing={2} sx={{ overflowY: "auto" }}>
-                {counselors.map((c, index) => (
+              <Stack spacing={2} sx={{ overflowY: "auto", maxHeight: "460px" }}>
+                {counselors.map((c, i) => (
                   <Box
-                    key={index}
+                    key={i}
                     sx={{
+                      p: 2,
                       display: "flex",
                       alignItems: "center",
                       gap: 2,
-                      p: 1,
-                      borderRadius: 2,
-                      backgroundColor: "#f9f9f9",
-                      "&:hover": { backgroundColor: "#e8f6f3" },
+                      background: "#ffffff",
+                      borderRadius: 3,
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+                      transition: "0.2s",
+                      "&:hover": { transform: "scale(1.02)", backgroundColor: "#e8faf3" },
                     }}
                   >
                     <Avatar sx={{ bgcolor: "#0f766e" }}>{c.name.charAt(0)}</Avatar>
 
                     <Box>
-                      <Typography
-                        variant="subtitle1"
-                        sx={{ fontWeight: "bold", color: "#0f766e" }}
-                      >
+                      <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
                         {c.name}
                       </Typography>
-                      <Typography variant="body2" sx={{ color: "#555" }}>
+                      <Typography variant="body2" sx={{ color: "gray" }}>
                         {c.specialty}
                       </Typography>
                     </Box>
@@ -193,42 +176,56 @@ const AdminDashboard = () => {
             </Paper>
           </Grid>
 
-          {/* RIGHT: CALENDAR */}
+          {/* Calendar Box */}
           <Grid item xs={12} md={8}>
             <Paper
-              elevation={6}
+              elevation={8}
               sx={{
                 p: 3,
-                borderRadius: 3,
-                height: "520px",
-                display: "flex",
-                flexDirection: "column",
+                borderRadius: 4,
+                height: "540px",
+                background: "#ffffff",
+                boxShadow: "0px 6px 20px rgba(0,0,0,0.08)",
               }}
             >
               <Typography
                 variant="h5"
-                sx={{ mb: 2, color: "#0b5345", fontWeight: "bold" }}
+                sx={{
+                  fontWeight: 700,
+                  color: "#0b5345",
+                  mb: 2,
+                }}
               >
                 Session Calendar
               </Typography>
 
-              <Box sx={{ flexGrow: 1 }}>
-                <FullCalendar
-                  plugins={[dayGridPlugin]}
-                  initialView="dayGridMonth"
-                  events={events}
-                  height="100%"
-                />
-              </Box>
+              <FullCalendar
+                plugins={[dayGridPlugin]}
+                initialView="dayGridMonth"
+                events={calendarEvents}
+                height="100%"
+              />
             </Paper>
           </Grid>
         </Grid>
 
-        {/* ✅ BOOKED SESSIONS TABLE */}
-        <Paper elevation={6} sx={{ p: 3, borderRadius: 3 }}>
+        {/* TABLE */}
+        <Paper
+          elevation={8}
+          sx={{
+            p: 3,
+            borderRadius: 4,
+            background: "#ffffff",
+            boxShadow: "0px 6px 20px rgba(0,0,0,0.08)",
+          }}
+        >
           <Typography
             variant="h5"
-            sx={{ mb: 2, color: "#0b5345", fontWeight: "bold" }}
+            sx={{
+              fontWeight: 700,
+              color: "#0b5345",
+              mb: 2,
+            }}
           >
             Booked Sessions
           </Typography>
@@ -242,11 +239,15 @@ const AdminDashboard = () => {
                 width: "100%",
                 borderCollapse: "collapse",
                 "& th, & td": {
-                  border: "1px solid #ccc",
+                  border: "1px solid #d9d9d9",
                   textAlign: "center",
-                  padding: "10px",
+                  padding: "12px",
                 },
-                "& th": { backgroundColor: "#0f766e", color: "white" },
+                "& th": {
+                  background: "#0f766e",
+                  color: "white",
+                  fontWeight: 700,
+                },
               }}
             >
               <thead>
@@ -271,10 +272,9 @@ const AdminDashboard = () => {
                         value={s.counselor}
                         onChange={(e) => assignCounselor(s.id, e.target.value)}
                         style={{
-                          padding: "6px",
-                          borderRadius: "6px",
+                          padding: "8px",
+                          borderRadius: "8px",
                           border: "1px solid #ccc",
-                          background: "#f4f4f4",
                         }}
                       >
                         <option>Unassigned</option>

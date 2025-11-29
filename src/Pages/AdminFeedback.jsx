@@ -24,9 +24,9 @@ const AdminFeedback = () => {
         feedbacks
           .slice()
           .reverse()
-          .map((fb) => (
+          .map((fb, index) => (
             <Paper
-              key={fb.id}
+              key={index}
               elevation={3}
               sx={{
                 p: 3,
@@ -34,7 +34,10 @@ const AdminFeedback = () => {
                 borderRadius: 3,
                 backgroundColor: "#fff",
                 transition: "0.3s",
-                "&:hover": { transform: "scale(1.02)", backgroundColor: "#eafaf1" },
+                "&:hover": {
+                  transform: "scale(1.02)",
+                  backgroundColor: "#eafaf1",
+                },
               }}
             >
               <Typography
@@ -43,13 +46,17 @@ const AdminFeedback = () => {
               >
                 {fb.event}
               </Typography>
+
               <Divider sx={{ my: 1 }} />
+
               <Typography variant="body1" sx={{ color: "#333", mb: 1 }}>
                 {fb.message}
               </Typography>
+
               <Typography variant="subtitle2" sx={{ color: "#0b5345" }}>
                 — {fb.name}
               </Typography>
+
               <Typography variant="caption" sx={{ color: "gray" }}>
                 📅 {fb.date}
               </Typography>
