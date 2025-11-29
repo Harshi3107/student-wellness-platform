@@ -22,6 +22,9 @@ import AdminDashboard from "./Pages/AdminDashboard";
 import AdminEvents from "./Pages/AdminEvents";
 import AdminFeedback from "./Pages/AdminFeedback";
 
+// ✅ DailyRoutine page (ADD THIS IMPORT)
+import DailyRoutine from "./Pages/DailyRoutine";
+
 function App() {
   return (
     <ThemeProvider theme={theme}>
@@ -44,6 +47,16 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={["student"]}>
                   <StudentDashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* DAILY ROUTINE (student-only) */}
+            <Route
+              path="/daily-routine"
+              element={
+                <ProtectedRoute allowedRoles={["student"]}>
+                  <DailyRoutine />
                 </ProtectedRoute>
               }
             />
