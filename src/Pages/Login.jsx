@@ -1,18 +1,15 @@
+// src/Pages/Login.jsx
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Paper,
-  Typography,
-  TextField,
-  Button,
-  Stack,
-} from "@mui/material";
-import "../Pages/Login.css";
+import { Box, Paper, Typography, TextField, Button, Stack } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import "./Login.css"; // Login.css should be in the same Pages folder
 
 export default function Login() {
   const CACHE_KEY = "swell_login_cache_v1";
+  const AUTH_KEY = "swell_auth_v1";
+  const navigate = useNavigate();
 
-  // Load cache
+  // Load small cache for convenience
   const initial = (() => {
     try {
       const raw = localStorage.getItem(CACHE_KEY);
@@ -30,7 +27,7 @@ export default function Login() {
   const [captcha, setCaptcha] = useState("");
   const [captchaInput, setCaptchaInput] = useState("");
 
-  // Save cache
+  // persist small cache
   useEffect(() => {
     try {
       const payload = { role, username, password };
@@ -38,13 +35,11 @@ export default function Login() {
     } catch {}
   }, [role, username, password]);
 
-  // Generate CAPTCHA
+  // generate captcha
   function generateCaptcha() {
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
     let code = "";
-    for (let i = 0; i < 5; i++) {
-      code += chars[Math.floor(Math.random() * chars.length)];
-    }
+    for (let i = 0; i < 5; i++) code += chars[Math.floor(Math.random() * chars.length)];
     setCaptcha(code);
   }
 
@@ -52,6 +47,7 @@ export default function Login() {
     generateCaptcha();
   }, []);
 
+  // demo fillers
   function fillDemo(roleKey) {
     if (roleKey === "student") {
       setRole("student");
@@ -70,37 +66,50 @@ export default function Login() {
     setCaptchaInput("");
   }
 
+  // when login is successful, write auth and navigate
+  function handleSuccessfulLogin() {
+    const authObj = { username: username.trim(), role, loggedAt: Date.now() };
+    try {
+      localStorage.setItem(AUTH_KEY, JSON.stringify(authObj));
+    } catch {}
+    if (role === "student") navigate("/student-dashboard");
+    else if (role === "admin") navigate("/admin-dashboard");
+    else if (role === "counsellor") navigate("/counsellor-dashboard");
+    else navigate("/");
+  }
+
   function onSubmit(e) {
     e.preventDefault();
 
+    // captcha validation
     if (captchaInput.trim().toUpperCase() !== captcha.toUpperCase()) {
-      alert("Incorrect CAPTCHA. Try again.");
+      alert("Incorrect CAPTCHA. Please try again.");
       generateCaptcha();
       setCaptchaInput("");
       return;
     }
 
     if (!username.trim() || !password) {
-      alert("Please enter username & password.");
+      alert("Please enter username and password.");
       return;
     }
 
     setBusy(true);
+    // simulate authentication delay; replace with real API later
     setTimeout(() => {
       setBusy(false);
-      alert(`Logged in as ${role}`);
-    }, 700);
+      // For now any credentials are accepted (or use demo buttons)
+      handleSuccessfulLogin();
+    }, 600);
   }
 
   return (
     <Box className="login-page-outer">
       <Paper elevation={6} className="login-card">
-        <Typography variant="h4" className="login-title">
-          Student Wellness Login
-        </Typography>
+        <Typography variant="h4" className="login-title">Student Wellness Login</Typography>
 
         {/* ROLE SELECTOR */}
-        <div className="role-selector">
+        <div className="role-selector" role="tablist" aria-label="Select role">
           <button
             className={`role-btn ${role === "student" ? "active-role" : ""}`}
             onClick={() => setRole("student")}
@@ -134,6 +143,7 @@ export default function Login() {
             fullWidth
             size="small"
             className="login-input"
+            autoComplete="username"
           />
 
           <TextField
@@ -144,23 +154,20 @@ export default function Login() {
             fullWidth
             size="small"
             className="login-input"
+            autoComplete="current-password"
           />
 
           {/* CAPTCHA */}
           <Stack spacing={1} sx={{ mt: 1 }}>
-            <Typography sx={{ fontWeight: 600, fontSize: "14px" }}>
-              Enter CAPTCHA *
-            </Typography>
+            <Typography sx={{ fontWeight: 600, fontSize: "14px" }}>Enter CAPTCHA *</Typography>
 
-            <Box className="captcha-box">
+            <Box className="captcha-box" role="img" aria-label="captcha">
               <span className="captcha-text">{captcha}</span>
               <button
                 type="button"
                 className="captcha-refresh"
-                onClick={() => {
-                  generateCaptcha();
-                  setCaptchaInput("");
-                }}
+                onClick={() => { generateCaptcha(); setCaptchaInput(""); }}
+                aria-label="Refresh captcha"
               >
                 ↻
               </button>
@@ -173,6 +180,7 @@ export default function Login() {
               fullWidth
               size="small"
               className="login-input"
+              inputProps={{ "aria-label": "captcha input" }}
             />
           </Stack>
 
@@ -187,17 +195,10 @@ export default function Login() {
             {busy ? "Please wait..." : "LOGIN"}
           </Button>
 
-          {/* DEMO BUTTONS */}
           <Stack spacing={1} sx={{ mt: 2 }}>
-            <Button variant="outlined" onClick={() => fillDemo("student")}>
-              Student Demo
-            </Button>
-            <Button variant="outlined" onClick={() => fillDemo("admin")}>
-              Admin Demo
-            </Button>
-            <Button variant="outlined" onClick={() => fillDemo("counsellor")}>
-              Counsellor Demo
-            </Button>
+            <Button variant="outlined" onClick={() => fillDemo("student")}>Student Demo</Button>
+            <Button variant="outlined" onClick={() => fillDemo("admin")}>Admin Demo</Button>
+            <Button variant="outlined" onClick={() => fillDemo("counsellor")}>Counsellor Demo</Button>
           </Stack>
         </form>
       </Paper>

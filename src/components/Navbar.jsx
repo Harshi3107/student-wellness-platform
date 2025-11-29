@@ -1,168 +1,87 @@
+// src/components/Navbar.jsx
 import React from "react";
-import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
+import { AppBar, Toolbar, Button, Typography, Box } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 
-const Navbar = () => {
+export default function Navbar() {
   const navigate = useNavigate();
-  const userRole = localStorage.getItem("userRole");
 
-  const handleLogout = () => {
-    localStorage.removeItem("userRole");
-    localStorage.removeItem("counsellorName");
-    localStorage.removeItem("studentEmail");
-    localStorage.removeItem("studentName");
+  // Read new login system auth from localStorage
+  let auth = null;
+  try {
+    const raw = localStorage.getItem("swell_auth_v1");
+    if (raw) auth = JSON.parse(raw);
+  } catch {
+    auth = null;
+  }
+
+  const role = auth?.role || null;
+
+  function logout() {
+    localStorage.removeItem("swell_auth_v1");
     navigate("/");
-  };
+  }
 
   return (
-    <AppBar
-      position="static"
-      sx={{
-        backgroundColor: "#0f766e",
-        boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-        borderBottomLeftRadius: "0.5rem",
-        borderBottomRightRadius: "0.5rem",
-      }}
-    >
-      <Toolbar>
+    <AppBar position="static" color="primary" sx={{ mb: 3 }}>
+      <Toolbar sx={{ display: "flex", justifyContent: "space-between", gap: 2 }}>
+
+        {/* Title / Logo */}
         <Typography
           variant="h6"
           component={Link}
-          to={
-            userRole === "admin"
-              ? "/admin-dashboard"
-              : userRole === "student"
-              ? "/student-dashboard"
-              : userRole === "counsellor"
-              ? "/counsellor-dashboard"
-              : "/"
-          }
-          sx={{
-            flexGrow: 1,
-            color: "#fff",
-            textDecoration: "none",
-            fontWeight: "bold",
-            cursor: "pointer",
-            "&:hover": { textDecoration: "underline" },
-          }}
+          to="/"
+          sx={{ textDecoration: "none", color: "white", fontWeight: 700 }}
         >
-          {userRole === "admin"
-            ? "Admin Dashboard 🌿"
-            : userRole === "student"
-            ? "Student Dashboard 🌿"
-            : userRole === "counsellor"
-            ? "Counsellor Dashboard 🌿"
-            : "Student Wellness 🌿"}
+          Student Wellness Platform
         </Typography>
 
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          {/* Public */}
-          <Button component={Link} to="/about" sx={{ color: "#fff" }}>
-            About
-          </Button>
+        {/* Nav items */}
+        <Box sx={{ display: "flex", gap: 1, alignItems: "center", flexWrap: "wrap" }}>
 
-          {/* STUDENT NAV */}
-          {userRole === "student" && (
+          {/* Student menu */}
+          {role === "student" && (
             <>
-              <Button component={Link} to="/events" sx={{ color: "#fff" }}>
-                Events
-              </Button>
-              <Button component={Link} to="/connect" sx={{ color: "#fff" }}>
-                Book Session
-              </Button>
-              <Button
-                component={Link}
-                to="/student-sessions"
-                sx={{ color: "#fff" }}
-              >
-                My Sessions
-              </Button>
-              <Button component={Link} to="/feedback" sx={{ color: "#fff" }}>
-                Feedback
-              </Button>
-              <Button
-                component={Link}
-                to="/student-dashboard"
-                sx={{ color: "#fff" }}
-              >
-                Dashboard
-              </Button>
+              <Button color="inherit" component={Link} to="/student-dashboard">Dashboard</Button>
+              <Button color="inherit" component={Link} to="/events">Events & Workshops</Button>
+              <Button color="inherit" component={Link} to="/connect">Counsellor Connect</Button>
+              <Button color="inherit" component={Link} to="/feedback">Feedback</Button>
             </>
           )}
 
-          {/* ADMIN NAV */}
-          {userRole === "admin" && (
+          {/* Admin menu */}
+          {role === "admin" && (
             <>
-              <Button component={Link} to="/admin-events" sx={{ color: "#fff" }}>
-                Manage Events
-              </Button>
-              <Button
-                component={Link}
-                to="/admin-feedback"
-                sx={{ color: "#fff" }}
-              >
-                Feedback
-              </Button>
-              <Button
-                component={Link}
-                to="/admin-sessions"
-                sx={{ color: "#fff" }}
-              >
-                Manage Sessions
-              </Button>
-              <Button
-                component={Link}
-                to="/admin-dashboard"
-                sx={{ color: "#fff" }}
-              >
-                Dashboard
-              </Button>
+              <Button color="inherit" component={Link} to="/admin-dashboard">Dashboard</Button>
+              <Button color="inherit" component={Link} to="/admin/events">Manage Events</Button>
+              <Button color="inherit" component={Link} to="/admin/feedback">Review Feedback</Button>
+              <Button color="inherit" component={Link} to="/admin/sessions">Manage Sessions</Button>
             </>
           )}
 
-          {/* COUNSELLOR NAV */}
-          {userRole === "counsellor" && (
+          {/* Counsellor menu */}
+          {role === "counsellor" && (
             <>
-              <Button
-                component={Link}
-                to="/counsellor-dashboard"
-                sx={{ color: "#fff" }}
-              >
-                Dashboard
-              </Button>
-              <Button component={Link} to="/sessions" sx={{ color: "#fff" }}>
-                Sessions
-              </Button>
-              <Button
-                component={Link}
-                to="/session-details"
-                sx={{ color: "#fff" }}
-              >
-                Session Details & Notes
-              </Button>
+              <Button color="inherit" component={Link} to="/counsellor-dashboard">Dashboard</Button>
+              <Button color="inherit" component={Link} to="/counsellor/sessions">Sessions</Button>
+              <Button color="inherit" component={Link} to="/counsellor/notes">Notes</Button>
+            </>
+          )}
+
+          {/* If not logged in, show minimal nav (optional) */}
+          {!role && (
+            <>
+              <Button color="inherit" component={Link} to="/">Sign In</Button>
+              <Button color="inherit" component={Link} to="/about">About</Button>
             </>
           )}
 
           {/* Logout */}
-          {userRole && (
-            <Button
-              onClick={handleLogout}
-              sx={{
-                color: "#fff",
-                border: "2px solid #fff",
-                borderRadius: "10px",
-                px: 2,
-                fontWeight: "bold",
-                "&:hover": { backgroundColor: "#fff", color: "#0f766e" },
-              }}
-            >
-              Logout
-            </Button>
+          {role && (
+            <Button color="inherit" onClick={logout}>Logout</Button>
           )}
         </Box>
       </Toolbar>
     </AppBar>
   );
-};
-
-export default Navbar;
+}
