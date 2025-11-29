@@ -1,5 +1,10 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 
 import { ThemeProvider } from "@mui/material/styles";
 import { CssBaseline, Box } from "@mui/material";
@@ -20,11 +25,19 @@ import AdminDashboard from "./Pages/AdminDashboard";
 import AdminEvents from "./Pages/AdminEvents";
 import AdminFeedback from "./Pages/AdminFeedback";
 import DailyRoutine from "./Pages/DailyRoutine";
+import StudyPlanner from "./Pages/StudyPlanner";
+import MindfulBreathing from "./Pages/MindfulBreathing";
+import SleepHygiene from "./Pages/SleepHygiene";
+import NutritionBasics from "./Pages/NutritionBasics";
 
+
+// -----------------------
+// Wrapper to hide Navbar on login
+// -----------------------
 function AppContent() {
   const location = useLocation();
 
-  // ❌ Hide Navbar on login page
+  // Hide navbar only on login
   const hideNavbar = location.pathname === "/";
 
   return (
@@ -33,7 +46,6 @@ function AppContent() {
 
       <Box sx={{ p: hideNavbar ? 0 : 3, minHeight: "100vh" }}>
         <Routes>
-
           {/* Public Routes */}
           <Route path="/" element={<Login />} />
           <Route path="/about" element={<About />} />
@@ -54,6 +66,42 @@ function AppContent() {
             element={
               <ProtectedRoute allowedRoles={["student"]}>
                 <DailyRoutine />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/study-planner"
+            element={
+              <ProtectedRoute allowedRoles={["student"]}>
+                <StudyPlanner />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/mindful-breathing"
+            element={
+              <ProtectedRoute allowedRoles={["student"]}>
+                <MindfulBreathing />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/sleep-hygiene"
+            element={
+              <ProtectedRoute allowedRoles={["student"]}>
+                <SleepHygiene />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/nutrition-basics"
+            element={
+              <ProtectedRoute allowedRoles={["student"]}>
+                <NutritionBasics />
               </ProtectedRoute>
             }
           />
@@ -103,13 +151,16 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-
         </Routes>
       </Box>
     </>
   );
 }
 
+
+// -----------------------
+// Main App
+// -----------------------
 function App() {
   return (
     <ThemeProvider theme={theme}>
