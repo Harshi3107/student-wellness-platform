@@ -8,8 +8,16 @@ const Navbar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("userRole");
-    navigate("/"); // ✅ FIXED: redirect to login route
+    navigate("/"); // redirect to login after logout
   };
+
+  // 🟢 Dashboard Redirect Based on Role
+  const dashboardPath =
+    userRole === "admin"
+      ? "/admin-dashboard"
+      : userRole === "student"
+      ? "/student-dashboard"
+      : "/";
 
   return (
     <AppBar
@@ -22,16 +30,11 @@ const Navbar = () => {
       }}
     >
       <Toolbar>
+        {/* 🌿 Title - Now correctly redirects depending on login */}
         <Typography
           variant="h6"
           component={Link}
-          to={
-            userRole === "admin"
-              ? "/admin-dashboard"
-              : userRole === "student"
-              ? "/student-dashboard"
-              : "/"
-          }
+          to={dashboardPath}
           sx={{
             flexGrow: 1,
             color: "#fff",
@@ -48,11 +51,13 @@ const Navbar = () => {
             : "Student Wellness 🌿"}
         </Typography>
 
+        {/* NAV LINKS */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <Button component={Link} to="/about" sx={{ color: "#fff" }}>
             About
           </Button>
 
+          {/* STUDENT NAV */}
           {userRole === "student" && (
             <>
               <Button component={Link} to="/events" sx={{ color: "#fff" }}>
@@ -64,20 +69,50 @@ const Navbar = () => {
               <Button component={Link} to="/feedback" sx={{ color: "#fff" }}>
                 Feedback
               </Button>
+              <Button
+                component={Link}
+                to="/student-dashboard"
+                sx={{
+                  color: "#fff",
+                  fontWeight: "bold",
+                  border: "2px solid transparent",
+                  "&:hover": { borderColor: "#fff", borderRadius: "8px" },
+                }}
+              >
+                Student Dashboard
+              </Button>
             </>
           )}
 
+          {/* ADMIN NAV */}
           {userRole === "admin" && (
             <>
-              <Button component={Link} to="/admin/events" sx={{ color: "#fff" }}>
+              <Button component={Link} to="/admin-events" sx={{ color: "#fff" }}>
                 Manage Events
               </Button>
-              <Button component={Link} to="/admin-feedback" sx={{ color: "#fff" }}>
+              <Button
+                component={Link}
+                to="/admin-feedback"
+                sx={{ color: "#fff" }}
+              >
                 Review Feedback
+              </Button>
+              <Button
+                component={Link}
+                to="/admin-dashboard"
+                sx={{
+                  color: "#fff",
+                  fontWeight: "bold",
+                  border: "2px solid transparent",
+                  "&:hover": { borderColor: "#fff", borderRadius: "8px" },
+                }}
+              >
+                Admin Dashboard
               </Button>
             </>
           )}
 
+          {/* LOGOUT */}
           {userRole && (
             <Button
               onClick={handleLogout}
@@ -87,10 +122,7 @@ const Navbar = () => {
                 borderRadius: "10px",
                 px: 2,
                 fontWeight: "bold",
-                "&:hover": {
-                  backgroundColor: "#fff",
-                  color: "#0f766e",
-                },
+                "&:hover": { backgroundColor: "#fff", color: "#0f766e" },
               }}
             >
               Logout
